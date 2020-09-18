@@ -1,10 +1,10 @@
 import React from 'react'
-import { Text, View, StyleSheet,Image, ActivityIndicator, ScrollView } from 'react-native'
+import {Platform,Alert,Share, Text, TouchableOpacity,View, StyleSheet,Image, ActivityIndicator, ScrollView } from 'react-native'
 import { getFilmDetailFromApi,getImageFromApi } from './../api/TMDBApi';
 import {connect} from 'react-redux'; // va permettre les abonnements
 import moment from 'moment';
 import numeral from 'numeral';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 class FilmDetail extends React.Component {
 
@@ -33,6 +33,38 @@ class FilmDetail extends React.Component {
                 style={styles.favorite_image}
             />
         )
+    }
+    // partager un film 
+    _shareFilm=()=>{
+       const  {film}=this.state;// recuperation du film depuis le state
+       Share.share({title:film.title,message:film.overview})  // Api pour partager du contenu depuis react-native
+            .then(
+                Alert.alert(
+                    'Succès',
+                    'Film partagé',
+                    [
+                        {text:'OK',onPress:()=>{}}
+                    ]
+                )
+            ).catch(
+                err => Alert.alert('Echec','Film non partagé',[{text:'OK',onPress:()=>{}}])
+            )
+    }
+    _displayFloatingActionButton=()=>{
+        const {film}=this.state;
+        if(film!=undefined && Platform.OS==="android"){
+            console.log("android");
+            return(
+               <TouchableOpacity
+                    style={styles.share_touchable_floating_action_button}
+                    onPress={()=>this._shareFilm()}>
+                      <Image
+                        style={styles.share_image}
+                        source={require('./../images/ic_share_android.png')}
+                       />
+                </TouchableOpacity>
+            )
+        }
     }
     _displayFilm() {
         const { film } = this.state
@@ -63,6 +95,7 @@ class FilmDetail extends React.Component {
                         return company.name;
                     }).join(" / ")}
                     </Text>
+                    {this._displayFloatingActionButton()}
                 </ScrollView>
             )
         }
@@ -151,6 +184,22 @@ const styles = StyleSheet.create({
     favorite_image:{
         width:40,
         height:40
+    },
+    share_touchable_floating_action_button:{
+        position:'absolute',
+        width:60,
+        height:60,
+        right:30,
+        bottom:30,
+        borderRadius:30,
+        backgroundColor:'#000',
+        justifyContent:'center',
+        alignItems:'center'
+
+    },
+    share_image:{
+        width:30,
+        height:30
     }
 })
 // TRES IMPORTANT QUAND UN PROPS CHANGE l'APP SE REREND donc "MISE A JOUR DES COMPOSANT ABONNEE"

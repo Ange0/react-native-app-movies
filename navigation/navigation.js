@@ -7,6 +7,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Favorites from './../components/Favorites';
+import Test from '../components/HelloWorld.android';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 
@@ -80,6 +81,7 @@ function MoviesTabNavigator() {
       }}
      
      >
+       {/*  <TabMovies.Screen name="Test" component={Test}/> */}
         <TabMovies.Screen name="Search" component={SearchStackNavigator}/>
         <TabMovies.Screen name="Favorites" component={FavoritesStackNavigator}/>
         
