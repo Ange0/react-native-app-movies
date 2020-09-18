@@ -5,7 +5,7 @@ export function getFilmsFromApiWithSearchText(text,page){
     
     return fetch(uri) // on va lancée notre requete
            .then((response)=>response.json()) // cas ou il ya succes
-           .catch((error)=>console.log(error)) // cas ou il erreur
+           .catch((error)=>{}/* console.log(error) */) // cas ou il erreur
 }
 
 // fonction pour obtenir le nom de l'image

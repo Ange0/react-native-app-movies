@@ -9,6 +9,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Favorites from './../components/Favorites';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
+
+
 /*
 const  searchStackNavigator=createStackNavigator({ // c'est la version anterieur
     Search:{ // definir l'ecran search
@@ -21,25 +23,40 @@ const  searchStackNavigator=createStackNavigator({ // c'est la version anterieur
 });
 */
 //export  default searchStackNavigator;
-const Stack = createStackNavigator();
+
+
+const StackSearch = createStackNavigator();
 
 function SearchStackNavigator() {
   return (
 
-    <Stack.Navigator>
-      <Stack.Screen name="Search" component={Search} />
-      <Stack.Screen name="Detail" component={FilmDetail} />
-    </Stack.Navigator>
+    <StackSearch.Navigator>
+      <StackSearch.Screen name="Search" component={Search} />
+      <StackSearch.Screen name="FilmDetail" component={FilmDetail} />
+    </StackSearch.Navigator>
 
   );
 }
 
-const Tab = createBottomTabNavigator();
+const StackFavorites = createStackNavigator();
+
+function FavoritesStackNavigator() {
+  return (
+
+    <StackFavorites.Navigator>
+      <StackFavorites.Screen name="Favories" component={Favorites} />
+      <StackFavorites.Screen  name="FimDetail" component={FilmDetail} />
+    </StackFavorites.Navigator>
+
+  );
+}
+
+const TabMovies = createBottomTabNavigator();
 
 function MoviesTabNavigator() {
   return (
     <NavigationContainer>
-      <Tab.Navigator
+      <TabMovies.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
@@ -63,10 +80,10 @@ function MoviesTabNavigator() {
       }}
      
      >
-        <Tab.Screen name="Search" component={SearchStackNavigator}/>
-        <Tab.Screen name="Favorites" component={Favorites}/>
+        <TabMovies.Screen name="Search" component={SearchStackNavigator}/>
+        <TabMovies.Screen name="Favorites" component={FavoritesStackNavigator}/>
         
-      </Tab.Navigator>
+      </TabMovies.Navigator>
     </NavigationContainer>
   );
 }
