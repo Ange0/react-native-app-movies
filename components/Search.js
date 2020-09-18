@@ -2,9 +2,10 @@ import React from 'react';
 import {TextInput,Button,View,StyleSheet,FlatList,Text,ActivityIndicator} from 'react-native';
 import films from './../helpers/fimlDatas'; // films en dure dans data de flatlist
 import FilmItems from './FilmItems';
+import {connect} from 'react-redux'; // va permettre les abonnements
 import {getFilmsFromApiWithSearchText} from './../api/TMDBApi';
 
-export default  class Search extends React.Component {
+  class Search extends React.Component {
      constructor(props){ // methodes qui va initialiser les donnees
         super(props);
         
@@ -78,6 +79,8 @@ export default  class Search extends React.Component {
                     />
                  <FlatList
                     data={this.state.films} // films depuis fimlDatas pour les test
+                    extraData={this.props.favoritesFilm}// On utilise la prop extraData pour indiquer à notre FlatList que d’autres données doivent être prises en compte si on lui demande de se re-rendre
+                    
                     onEndReachedThreshold={0.5}// tres important pour les scroll infini
                     onEndReached={()=>{ // appeler une action
                         if(this.state.films.length>0 && this.pageCurrent<this.totalPage){ // nous somme a la fin des 20 premier films  et que le nombre de page n' a pas depassé le total des pages
@@ -86,7 +89,8 @@ export default  class Search extends React.Component {
                         }
                     }}
                     keyExtractor={(item)=>item.id.toString()} // pour definir un id unique
-                    renderItem={({item}) => <FilmItems displayDetailForFilm={this._displayDetailForFilm} film={item}/>} // C'est ici que ce trouve mon magnifique composant FilmsItems, WOOh je peux faire passer une methode parent a un composant enfant (_displayDetailForFilm())
+                    // Ajout d'une props isFilmFavorite pour indiquer à l'item d'afficher un 🖤 ou non
+                    renderItem={({item}) => <FilmItems isFilmFavorite={(this.props.favoritesFilm.findIndex(film => film.id === item.id) !== -1) ? true : false} displayDetailForFilm={this._displayDetailForFilm} film={item}/>} // C'est ici que ce trouve mon magnifique composant FilmsItems, WOOh je peux faire passer une methode parent a un composant enfant (_displayDetailForFilm())
                  />
                  {this._displayLoading()}
             </View>
@@ -119,3 +123,11 @@ const style = StyleSheet.create({
        justifyContent:'center'
     }
   });
+
+  // TRES IMPORTANT QUAND UN PROPS CHANGE l'APP SE REREND donc "MISE A JOUR DES COMPOSANT ABONNEE"
+const mapStateToProps = (state) =>{ // il va permettre de connecter les données du state globale aux props du composant FilmDetail
+    return { // je vais specifier les données du state globale qui m'interresse
+         favoritesFilm : state.favoritesFilm
+    }
+}
+export default connect(mapStateToProps)(Search); // Abonement effectuer avec les données du state globale donc depuis reducers mapé (favoritesFilm)

@@ -1,17 +1,15 @@
- import { StatusBar } from 'expo-status-bar';
+
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import About from './components/About';
 import Navigation from './navigation/navigation';
-import { NavigationContainer } from '@react-navigation/native';
-import { TabNavigator } from 'react-navigation';
+import {Provider} from 'react-redux'; // sera charger de distribuer mon reducer qui se troure dans store
 
-
-
+import Store from './store/configureStore';
 export default function App() {
-  return (
-  //  <Tabs/> 
-  <Navigation/>
+  return (// on va encapsuler notre application dans provider Tous ecrans peuvent  s'abonner maintenat a notre store exemple dans  Composnat filmDetail 
+  <Provider store={Store}>
+    <Navigation/> 
+  </Provider>
+  
   );
 }
  

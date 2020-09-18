@@ -4,11 +4,26 @@ import films from './../helpers/fimlDatas';
 import {getImageFromApi} from './../api/TMDBApi';
 export default class FilmItems extends React.Component {
 
+
+
+    _displayFavoriteImage() {
+        if (this.props.isFilmFavorite) {
+          // Si la props isFilmFavorite vaut true, on affiche le 🖤
+          return (
+            <Image
+              style={style.favorite_image}
+              source={require('./../images/ic_favorite.png')}
+            />
+          )
+        }
+      }
     render() {
         console.log(this.props.film);
        /*  const film = this.props.film; // la donnée du passé depuis le composant parent
         const displayDetailForFilm=this.props.displayDetailForFilm; */
         const {film,displayDetailForFilm}=this.props;
+
+
         return (
             <TouchableOpacity 
                 onPress={()=>displayDetailForFilm(film.id)} // le passade des valeurs reels
@@ -19,6 +34,7 @@ export default class FilmItems extends React.Component {
                 />
                 <View style={style.content_container}>
                     <View style={style.header_container}>
+                        {this._displayFavoriteImage()}
                         <Text style={style.title_text}>{film.title}</Text>
                         <Text style={style.vote_text}>{film.vote_average}</Text>
                     </View>
@@ -80,5 +96,10 @@ const style = StyleSheet.create({
     date_text: {
         textAlign: 'right',
         fontSize: 14
-    }
+    },
+    favorite_image: {
+        width: 25,
+        height: 25,
+        marginRight: 5
+      }
 });
