@@ -1,53 +1,69 @@
 import React from 'react';
-import { TextInput, Button, View, StyleSheet, FlatList, Image, Text,TouchableOpacity } from 'react-native';
+import { TextInput, Button, View, StyleSheet, FlatList, Dimensions, Animated, Image, Text, TouchableOpacity } from 'react-native';
 import films from './../helpers/fimlDatas';
-import {getImageFromApi} from './../api/TMDBApi';
+import { getImageFromApi } from './../api/TMDBApi';
+import FadeIn from './../animations/fadeIn';
 export default class FilmItems extends React.Component {
 
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            // recuperation du dimention de l'ecran
+            positionLef: new Animated.Value(Dimensions.get('window').width)// je veux que les items soivent en dehorss de l'ecran c"sest a dire a droide
+        }
+    }
+    /*
+    // on definir notre animation quand le compasant est monté
+    componentDidMount() {
+        Animated.spring(
+            this.state.positionLef, // depart
+            {
+                toValue: 0 // fin
+            }
+        ).start();
+    } */
 
     _displayFavoriteImage() {
         if (this.props.isFilmFavorite) {
-          // Si la props isFilmFavorite vaut true, on affiche le 🖤
-          return (
-            <Image
-              style={style.favorite_image}
-              source={require('./../images/ic_favorite.png')}
-            />
-          )
+            // Si la props isFilmFavorite vaut true, on affiche le 🖤
+            return (
+                <Image
+                    style={style.favorite_image}
+                    source={require('./../images/ic_favorite.png')}
+                />
+            )
         }
-      }
+    }
     render() {
         console.log(this.props.film);
-       /*  const film = this.props.film; // la donnée du passé depuis le composant parent
-        const displayDetailForFilm=this.props.displayDetailForFilm; */
-        const {film,displayDetailForFilm}=this.props;
-
-
+        /*  const film = this.props.film; // la donnée du passé depuis le composant parent
+         const displayDetailForFilm=this.props.displayDetailForFilm; */
+        const { film, displayDetailForFilm } = this.props;
         return (
-            <TouchableOpacity 
-                onPress={()=>displayDetailForFilm(film.id)} // le passade des valeurs reels
-                style={style.main_container}>
-                <Image
-                    style={style.image}
-                    source={{ uri: getImageFromApi(film.poster_path) }}
-                />
-                <View style={style.content_container}>
-                    <View style={style.header_container}>
-                        {this._displayFavoriteImage()}
-                        <Text style={style.title_text}>{film.title}</Text>
-                        <Text style={style.vote_text}>{film.vote_average}</Text>
+            <FadeIn>
+                <TouchableOpacity
+                    onPress={() => displayDetailForFilm(film.id)} // le passade des valeurs reels
+                    style={style.main_container}>
+                    <Image
+                        style={style.image}
+                        source={{ uri: getImageFromApi(film.poster_path) }}
+                    />
+                    <View style={style.content_container}>
+                        <View style={style.header_container}>
+                            {this._displayFavoriteImage()}
+                            <Text style={style.title_text}>{film.title}</Text>
+                            <Text style={style.vote_text}>{film.vote_average}</Text>
+                        </View>
+                        <View style={style.description_container}>
+                            <Text style={style.description_text} numberOfLines={6}>{film.overview}</Text>
+                        </View>
+                        <View style={style.date_container}>
+                            <Text style={style.date_text} >Sortie {film.release_date}</Text>
+                        </View>
                     </View>
-                    <View style={style.description_container}>
-                        <Text style={style.description_text} numberOfLines={6}>{film.overview}</Text>
-                    </View>
-                    <View style={style.date_container}>
-                        <Text style={style.date_text} >Sortie {film.release_date}</Text>
-                    </View>
-                </View>
-
-
-            </TouchableOpacity>
+                </TouchableOpacity>
+            </FadeIn>
         )
     }
 }
@@ -101,5 +117,5 @@ const style = StyleSheet.create({
         width: 25,
         height: 25,
         marginRight: 5
-      }
+    }
 });

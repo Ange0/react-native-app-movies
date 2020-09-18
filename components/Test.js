@@ -1,17 +1,20 @@
 import React from 'react'
-import {Text,View,StyleSheet,ActivityIndicator,Platform} from 'react-native'
+import {Text,View,StyleSheet,Animated,ActivityIndicator,Platform} from 'react-native'
 import HelloWorld from './HelloWorld';
 
-export default class HelloWorld extends React.Component{
+export default class Test extends React.Component{
+
+
+    constructor(props){
+        super(props)
+        this.statte={
+            topPosition: new Animated.Value(0)
+        }
+    }
     render(){
         return (
-           /*  <View style={mySytle.main_container}>
-                <View style={mySytle.subview_container}></View>
-                <HelloWorld/>
-            </View> */
             <View style={mySytle.main_container}>
                 <View style={mySytle.animated_container}></View>
-              
             </View>
         )
     }

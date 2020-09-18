@@ -7,7 +7,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Favorites from './../components/Favorites';
-import Test from '../components/HelloWorld.android';
+import Test from '../components/Test';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 

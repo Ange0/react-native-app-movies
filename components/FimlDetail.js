@@ -1,10 +1,11 @@
 import React from 'react'
-import {Platform,Alert,Share, Text, TouchableOpacity,View, StyleSheet,Image, ActivityIndicator, ScrollView } from 'react-native'
-import { getFilmDetailFromApi,getImageFromApi } from './../api/TMDBApi';
-import {connect} from 'react-redux'; // va permettre les abonnements
+import { Platform, Alert, Share, Text, TouchableOpacity, View, StyleSheet, Image, ActivityIndicator, ScrollView } from 'react-native'
+import { getFilmDetailFromApi, getImageFromApi } from './../api/TMDBApi';
+import { connect } from 'react-redux'; // va permettre les abonnements
 import moment from 'moment';
 import numeral from 'numeral';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+
+import EnlargeShrink from './../animations/EnlargeShrink';
 
 class FilmDetail extends React.Component {
 
@@ -16,52 +17,56 @@ class FilmDetail extends React.Component {
         }
     }
     // methode pour afficher le detail d'un film
-    _toggleFavorite(){
-        const action={type:"TOGGLE_FAVORITE",value:this.state.film}
+    _toggleFavorite() {
+        const action = { type: "TOGGLE_FAVORITE", value: this.state.film }
         this.props.dispatch(action)// il va renvoyer l'action a mon Store donc a favoriteReducer
     }
-    _displayFavoriteImage(){
-        var sourceImage=require('./../images/ic_favorite_border.png');
-        if(this.props.favoritesFilm.findIndex((film)=>film.id=== this.state.film.id)!==-1){ // comparaison de l'id du film dans les favoris aux films du state normal 
+    _displayFavoriteImage() {
+        var sourceImage = require('./../images/ic_favorite_border.png');
+        var shouldEnlarge = false // Par défaut, si le film n'est pas en favoris, on veut qu'au clic sur le bouton, celui-ci s'agrandisse => shouldEnlarge à true
+        if (this.props.favoritesFilm.findIndex((film) => film.id === this.state.film.id) !== -1) { // comparaison de l'id du film dans les favoris aux films du state normal 
             // film est deja dans nos favoris
-            sourceImage=require('./../images/ic_favorite.png');
+            sourceImage = require('./../images/ic_favorite.png');
+            shouldEnlarge=true;
         }
 
-        return(
-            <Image
-                source={sourceImage}
-                style={styles.favorite_image}
-            />
+        return (
+            <EnlargeShrink shouldEnlarge={shouldEnlarge}>
+                <Image
+                    source={sourceImage}
+                    style={styles.favorite_image}
+                />
+            </EnlargeShrink>
         )
     }
     // partager un film 
-    _shareFilm=()=>{
-       const  {film}=this.state;// recuperation du film depuis le state
-       Share.share({title:film.title,message:film.overview})  // Api pour partager du contenu depuis react-native
+    _shareFilm = () => {
+        const { film } = this.state;// recuperation du film depuis le state
+        Share.share({ title: film.title, message: film.overview })  // Api pour partager du contenu depuis react-native
             .then(
                 Alert.alert(
                     'Succès',
                     'Film partagé',
                     [
-                        {text:'OK',onPress:()=>{}}
+                        { text: 'OK', onPress: () => { } }
                     ]
                 )
             ).catch(
-                err => Alert.alert('Echec','Film non partagé',[{text:'OK',onPress:()=>{}}])
+                err => Alert.alert('Echec', 'Film non partagé', [{ text: 'OK', onPress: () => { } }])
             )
     }
-    _displayFloatingActionButton=()=>{
-        const {film}=this.state;
-        if(film!=undefined && Platform.OS==="android"){
+    _displayFloatingActionButton = () => {
+        const { film } = this.state;
+        if (film != undefined && Platform.OS === "android") {
             console.log("android");
-            return(
-               <TouchableOpacity
+            return (
+                <TouchableOpacity
                     style={styles.share_touchable_floating_action_button}
-                    onPress={()=>this._shareFilm()}>
-                      <Image
+                    onPress={() => this._shareFilm()}>
+                    <Image
                         style={styles.share_image}
                         source={require('./../images/ic_share_android.png')}
-                       />
+                    />
                 </TouchableOpacity>
             )
         }
@@ -75,10 +80,10 @@ class FilmDetail extends React.Component {
                         style={styles.image}
                         source={{ uri: getImageFromApi(film.backdrop_path) }}
                     />
-                    <TouchableOpacity 
-                     onPress={()=>this._toggleFavorite()}
-                      style={styles.favorite_container}
-                     >
+                    <TouchableOpacity
+                        onPress={() => this._toggleFavorite()}
+                        style={styles.favorite_container}
+                    >
                         {this._displayFavoriteImage()}
                     </TouchableOpacity>
                     <Text style={styles.title_text}>{film.title}</Text>
@@ -129,7 +134,7 @@ class FilmDetail extends React.Component {
             });
         })
     }
-    componentDidUpdate(){
+    componentDidUpdate() {
         console.log(this.props.favoritesFilm);
     }
 
@@ -181,31 +186,32 @@ const styles = StyleSheet.create({
     favorite_container: {
         alignItems: 'center',
     },
-    favorite_image:{
-        width:40,
-        height:40
+    favorite_image: {
+        flex: 1,
+        width: null,
+        height: null
     },
-    share_touchable_floating_action_button:{
-        position:'absolute',
-        width:60,
-        height:60,
-        right:30,
-        bottom:30,
-        borderRadius:30,
-        backgroundColor:'#000',
-        justifyContent:'center',
-        alignItems:'center'
+    share_touchable_floating_action_button: {
+        position: 'absolute',
+        width: 60,
+        height: 60,
+        right: 30,
+        bottom: 30,
+        borderRadius: 30,
+        backgroundColor: '#000',
+        justifyContent: 'center',
+        alignItems: 'center'
 
     },
-    share_image:{
-        width:30,
-        height:30
+    share_image: {
+        width: 30,
+        height: 30
     }
 })
 // TRES IMPORTANT QUAND UN PROPS CHANGE l'APP SE REREND donc "MISE A JOUR DES COMPOSANT ABONNEE"
-const mapStateToProps = (state) =>{ // il va permettre de connecter les données du state globale aux props du composant FilmDetail
+const mapStateToProps = (state) => { // il va permettre de connecter les données du state globale aux props du composant FilmDetail
     return { // je vais specifier les données du state globale qui m'interresse
-         favoritesFilm : state.favoritesFilm
+        favoritesFilm: state.favoritesFilm
     }
 }
 export default connect(mapStateToProps)(FilmDetail); // Abonement effectuer avec les données du state globale donc depuis reducers mapé (favoritesFilm)
